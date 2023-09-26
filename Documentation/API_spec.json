@@ -1,0 +1,135 @@
+{
+    "openrpc": "1.0.0-rc1",
+    "info": {
+        "version": "0.1.0",
+        "title": "Excessive Motion API",
+        "license": {
+            "name": "GPLv3.0"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080"
+        }
+    ],
+    "methods": [
+        {
+            "name": "parameter_list",
+            "summary": "Fetch all sub-parameters underneath this parameter",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "The name of the parameter to enumerate",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/components/schemas/ParamName"
+                    }
+                },
+                {
+                    "name": "recursive",
+                    "description": "Should parameters be enumerated recursively?",
+                    "schema": {
+                        "type": "boolean"
+                    }
+                }
+            ],
+            "result": {
+                "name": "parameters",
+                "description": "A list of all parameters below the given parameter",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/ParamName"
+                    }
+                }
+            },
+            "examples": [
+                {
+                    "name": "list_param_example",
+                    "description": "List parameter example",
+                    "params": [
+                        {
+                            "name": "namespace",
+                            "value": "/joint/1"
+                        }
+                    ],
+                    "result": {
+                        "name": "parameters",
+                        "value": [
+                            "/joint/1/state",
+                            "/joint/1/config",
+                            "/joint/1/control"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "parameter_info",
+            "summary": "Get information about a specific parameter",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "Name of parameter to investigate",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/components/schemas/ParamName"
+                    }
+                }
+            ],
+            "result": {
+                "name": "parameter_info",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "description": "Type of parameter",
+                            "$ref": "#/components/schemas/ParamType"
+                        },
+                        "description": {
+                            "description": "Medium-length human-readable description of parameter purpose",
+                            "type": "string"
+                        },
+                        "read_only": {
+                            "description": "True if this parameter is read-only",
+                            "type": "boolean"
+                        }
+                    }
+                }
+            },
+            "examples": [
+                {
+                    "name": "parameter_info_example",
+                    "description": "Parameter info example",
+                    "params": [
+                        {
+                            "name": "name",
+                            "value": "/joint/1/state"
+                        }
+                    ],
+                    "result": {
+                        "name": "parameter_info",
+                        "value": {
+                            "type": "JointState",
+                            "description": "The current state of the given joint.",
+                            "read_only": true
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "components": {
+        "schemas": {
+            "ParamName": {
+                "type": "string",
+                "pattern": "^(/|(/[^/]+)+)$"
+            },
+            "ParamType": {
+                "type": "string",
+                "enum": ["JointState", "string", "integer", "..."]
+            }
+        }
+    }
+}
+
